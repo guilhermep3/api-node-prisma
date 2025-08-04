@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  status     Boolean  @default(true)
+  name       String
+  email      String   @unique(map: "User_email_key")
+  age        Int
+  role       Role     @default(USER)
+  posts      Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  title      String
+  subtitle   String?  @map("sub_title")
+  body       String
+  user_id    Int
+  author     User     @relation(fields: [user_id], references: [id])
+
+  @@map("posts")
+}
